@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vizsga Felkészítő - SEO & PPC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --success: #22c55e;
+            --error: #ef4444;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #1f2937;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            perspective: 1000px;
+        }
+
+        /* --- MENÜ STÍLUSOK --- */
+        .header { text-align: center; color: white; margin-bottom: 40px; animation: fadeIn 1s ease; }
+        .header h1 { font-size: 2.2rem; margin-bottom: 10px; text-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .menu-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .menu-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.25); }
+        
+        .icon-box {
+            width: 70px; height: 70px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; margin: 0 auto 20px;
+        }
+
+        /* --- ACTIVE VIEW BASE --- */
+        #active-view {
+            display: none;
+            background: transparent;
+        }
+
+        /* --- TANULÓKÁRTYA (FLIP CARD) STÍLUSOK --- */
+        .flashcard-container {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            perspective: 1000px;
+            margin-bottom: 20px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            cursor: pointer;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .flashcard.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            background: white;
+        }
+
+        .card-front { 
+            background: white; 
+            border-bottom: 5px solid var(--primary);
+        }
+        
+        .card-back { 
+            background: #f8fafc; 
+            transform: rotateY(180deg); 
+            border-bottom: 5px solid var(--secondary);
+        }
+
+        .card-label {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .card-content { font-size: 1.3rem; font-weight: 500; line-height: 1.5; }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* --- KVÍZ STÍLUSOK --- */
+        .quiz-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s ease;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option-btn {
+            padding: 15px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #f5f3ff;
+        }
+
+        .option-btn.correct { background: #dcfce7; border-color: var(--success); color: #166534; }
+        .option-btn.wrong { background: #fee2e2; border-color: var(--error); color: #991b1b; }
+
+        /* --- COMMON BUTTONS --- */
+        .btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        
+        .btn-primary { background: white; color: var(--primary); }
+        .btn-primary:hover { background: #f0f0f0; }
+
+        .btn-nav { background: rgba(255,255,255,0.9); color: var(--text-main); }
+        .btn-nav:hover { background: white; transform: scale(1.05); }
+
+        .progress-text { color: white; font-weight: 600; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .hidden { display: none !important; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div id="menu-view">
+            <div class="header">
+                <h1>Vizsga Felkészítő</h1>
+                <p>Válassz tanulási módot a SEO és PPC anyagokhoz</p>
+            </div>
+
+            <div class="menu-grid">
+                <div class="menu-card" onclick="startFlashcards()">
+                    <div class="icon-box"><i class="fas fa-clone"></i></div>
+                    <h2>Tanulás Kártyákkal</h2>
+                    <p>Forgasd a kártyákat, ellenőrizd a tudásod definíciók és fogalmak terén.</p>
+                </div>
+
+                <div class="menu-card" onclick="startQuiz()">
+                    <div class="icon-box"><i class="fas fa-check-circle"></i></div>
+                    <h2>Tanulás Kvízzel</h2>
+                    <p>Teszteld magad 4 válaszlehetőséges kérdésekkel. Verseny a pontokért!</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="active-view">
+            <div style="margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> Vissza a menübe
+                </button>
+            </div>
+
+            <div id="flashcard-section" class="hidden">
+                <div class="flashcard-container" onclick="flipCard()">
+                    <div class="flashcard" id="card-element">
+                        <div class="card-face card-front">
+                            <div class="card-label">Kérdés</div>
+                            <div class="card-content" id="fc-question">?</div>
+                            <div style="margin-top: 20px; font-size: 0.9rem; color: #999;">(Kattints a fordításhoz)</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <div class="card-label">Helyes válasz</div>
+                            <div class="card-content" id="fc-answer">!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-nav" onclick="prevCard()"><i class="fas fa-chevron-left"></i> Előző</button>
+                    <span class="progress-text" id="fc-progress">1 / 10</span>
+                    <button class="btn btn-nav" onclick="nextCard()">Következő <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div id="quiz-section" class="hidden">
+                <div class="quiz-box">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; color: #666;">
+                        <span id="quiz-progress">Kérdés 1 / 10</span>
+                        <span id="quiz-score">Pontszám: 0</span>
+                    </div>
+                    
+                    <div id="quiz-content">
+                        <div class="quiz-question" id="q-text">Kérdés szövege...</div>
+                        <div class="options-grid" id="q-options">
+                            </div>
+                    </div>
+
+                    <div id="quiz-end" class="hidden" style="text-align: center;">
+                        <i class="fas fa-trophy" style="font-size: 3rem; color: gold; margin-bottom: 20px;"></i>
+                        <h2>Kvíz Vége!</h2>
+                        <p style="font-size: 1.2rem; margin: 15px 0;">Az eredményed: <strong id="final-score"></strong></p>
+                        <button class="btn" style="background: var(--primary); color: white;" onclick="startQuiz()">Újra</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ADATBÁZIS A PDF-EK ALAPJÁN (Citations based on OMA5, OMA6A, OMA6B)
+        const database = [
+            // --- EREDETI 10 KÉRDÉS ---
+            {
+                question: "Mi a Minőségi Mutató (Quality Score) 3 fő összetevője a Google Ads-ben?",
+                answer: "Várható átkattintási arány (Expected CTR), Hirdetés relevanciája, Landing oldal élménye.",
+                options: [
+                    "CPC ajánlat, Napi keret, Kulcsszó hossza",
+                    "Várható CTR, Hirdetés relevanciája, Landing oldal élménye",
+                    "Konverziós arány, Megtekintések száma, Weboldal sebesség",
+                    "Büdzsé mérete, Fiók életkora, Hirdetésbővítmények száma"
+                ],
+                correct: 1
+            },
+            {
+                question: "Melyik a helyes hierarchia sorrend a Google Ads fiókban?",
+                answer: "Fiók (Account) > Kampány (Campaign) > Hirdetéscsoport (Ad Group) > Hirdetés/Kulcsszó.",
+                options: [
+                    "Kampány > Fiók > Hirdetés > Kulcsszó",
+                    "Fiók > Hirdetéscsoport > Kampány > Hirdetés",
+                    "Fiók > Kampány > Hirdetéscsoport > Hirdetés",
+                    "Hirdetéscsoport > Kampány > Fiók > Kulcsszó"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mit jelent az 'Exact Match' (Pontos egyezés) kulcsszó típus és mi a jele?",
+                answer: "Jele: [szögletes zárójel]. Csak a pontosan megadott kifejezésre vagy annak nagyon közeli variánsaira jelenik meg a hirdetés.",
+                options: [
+                    "Jele: 'idézőjel'. A kifejezésnek benne kell lennie a keresésben.",
+                    "Jele: nincs. Bármilyen releváns keresésre megjelenhet.",
+                    "Jele: [szögletes zárójel]. Csak a pontos kifejezésre jelenik meg.",
+                    "Jele: -kötőjel. Kizárja a keresést."
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi a SEO (Keresőoptimalizálás) elsődleges célja?",
+                answer: "A weboldal organikus (nem fizetett) forgalmának növelése a keresőmotorok találati listájáról.",
+                options: [
+                    "Azonnali látogatók vásárlása hirdetésekkel",
+                    "A weboldal organikus forgalmának növelése",
+                    "Közösségi média követők számának növelése",
+                    "A Google Ads Quality Score javítása"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi az a Performance Max (PMax) kampány?",
+                answer: "AI-vezérelt kampánytípus, amely egyetlen kampányból éri el az összes Google hálózatot (YouTube, Display, Search, stb.).",
+                options: [
+                    "Csak a Google Keresőben megjelenő hirdetés",
+                    "AI-vezérelt kampány, ami az összes Google felületen hirdet",
+                    "Kézzel beállított banner kampány blogokon",
+                    "Videós hirdetés kizárólag YouTube-ra"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a különbség az 'In-stream' és 'In-feed' YouTube hirdetések között?",
+                answer: "In-stream: videók előtt/közben (átugorható/nem átugorható). In-feed: a videófolyamban vagy keresési találatokban jelenik meg.",
+                options: [
+                    "Nincs különbség, szinonimák.",
+                    "In-stream: videók alatt futó csík. In-feed: videó előtti reklám.",
+                    "In-stream: videók előtt/közben. In-feed: a videó listában/feedben jelenik meg.",
+                    "In-stream: csak mobilon. In-feed: csak asztali gépen."
+                ],
+                correct: 2
+            },
+            {
+                question: "Mit takar az Off-Page SEO fogalma?",
+                answer: "A weboldalon kívüli tényezők optimalizálása (főleg backlink szerzés/linképítés) a hitelesség növelése érdekében.",
+                options: [
+                    "A weboldal sebességének javítása",
+                    "Kulcsszavak elhelyezése a szövegben",
+                    "Külső linkek (backlinkek) szerzése és márkaépítés",
+                    "A meta leírások megírása"
+                ],
+                correct: 2
+            },
+            {
+                question: "Melyik mutató határozza meg a hirdetés helyezését (Ad Rank) az aukció során?",
+                answer: "Ad Rank = Max. CPC ajánlat × Minőségi mutató (Quality Score).",
+                options: [
+                    "Csak a Max. CPC ajánlat (aki többet fizet, nyer)",
+                    "Max. CPC ajánlat × Minőségi mutató",
+                    "A cég éves bevétele",
+                    "A hirdetés szövegének hossza"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a Google Merchant Center szerepe?",
+                answer: "Ide kell feltölteni a webáruház termék-feedjét (adatfájl), ez az alapja a Shopping és PMax kampányoknak.",
+                options: [
+                    "A kulcsszókutatás fő eszköze",
+                    "Itt kezeljük a YouTube csatorna beállításait",
+                    "Ide töltjük fel a termékadatokat a Shopping hirdetésekhez",
+                    "Ez a Google Analytics régi neve"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi az a GEO (Generative Engine Optimization)?",
+                answer: "Optimalizálás a generatív AI keresőkre (pl. SGE, ChatGPT), ahol a cél, hogy az AI a mi tartalmunkból építse fel a választ.",
+                options: [
+                    "Földrajzi alapú keresőoptimalizálás",
+                    "Optimalizálás generatív AI válaszokra (pl. SGE)",
+                    "Google Earth Optimization",
+                    "Grafikus Elem Optimalizálás"
+                ],
+                correct: 1
+            },
+
+            // --- ÚJ KÉRDÉSEK (SEO - OMA5) ---
+            {
+                question: "Mi a 'crawling' (feltérképezés) a keresőmotorok működésében?",
+                answer: "Amikor a keresőmotorok botjai (crawlers) folyamatosan feltérképezik a weboldalakat és követik a linkeket.",
+                options: [
+                    "A tartalom rangsorolása a találati listán",
+                    "A weboldal tárolása az adatbázisban",
+                    "A botok feltérképezik az oldalakat és linkeket",
+                    "A felhasználói élmény mérése"
+                ],
+                correct: 2
+            },
+            {
+                question: "Melyik algoritmus bevezetése (1998) tette piacvezetővé a Google-t?",
+                answer: "A PageRank, amely a linkek minőségét és mennyiségét vette figyelembe.",
+                options: [
+                    "RankBrain",
+                    "PageRank",
+                    "Penguin",
+                    "Hummingbird"
+                ],
+                correct: 1
+            },
+            {
+                question: "Miért fontos a Title tag (oldalcím) a SEO-ban?",
+                answer: "Ez az egyik legfontosabb rangsorolási tényező, tartalmaznia kell a fő kulcsszavakat.",
+                options: [
+                    "Csak a design miatt fontos",
+                    "Nincs rangsorolási értéke, csak esztétikai",
+                    "Az egyik legfontosabb rangsorolási tényező",
+                    "Csak mobilon jelenik meg"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi a Meta description (meta leírás) szerepe?",
+                answer: "Közvetlenül nem rangsorolási tényező, de növeli az átkattintási arányt (CTR).",
+                options: [
+                    "Közvetlen rangsorolási tényező",
+                    "Növeli az átkattintási arányt (CTR)",
+                    "A botoknak szól, nem az embereknek",
+                    "Helyettesíti a tartalmat"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mik azok a 'long-tail' (hosszú farok) kulcsszavak?",
+                answer: "Hosszabb, specifikusabb kifejezések, kisebb keresési volumennel, de célzottabb forgalommal.",
+                options: [
+                    "Rövid, általános egyszavas kifejezések",
+                    "Nagy keresési volumenű szavak",
+                    "Specifikus, több szóból álló kifejezések",
+                    "Kizárt kulcsszavak listája"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi az a Mobile-First Indexing?",
+                answer: "A Google elsődlegesen a weboldal mobil verzióját használja a rangsoroláshoz.",
+                options: [
+                    "Csak mobil applikációk rangsorolása",
+                    "A mobil verzió elsődlegessége a rangsorolásnál",
+                    "Mobilon nincs SEO, csak asztalin",
+                    "Csak a weboldal sebessége számít"
+                ],
+                correct: 1
+            },
+            {
+                question: "Melyik backlink ér többet a SEO-ban?",
+                answer: "A releváns, magas autoritású oldalról érkező link (minőség a mennyiség felett).",
+                options: [
+                    "Bármilyen link egyformán jó",
+                    "Minél több, annál jobb (mennyiség)",
+                    "Releváns, magas hitelességű oldalról érkező",
+                    "Közösségi média megosztás"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi a Local SEO (Helyi keresőoptimalizálás) célja?",
+                answer: "Konkrét földrajzi helyszínhez kötött keresésekre (pl. városnév) való megjelenés növelése.",
+                options: [
+                    "Világszintű megjelenés elérése",
+                    "Helyi, földrajzi keresésekre való optimalizálás",
+                    "Csak webáruházaknak fontos",
+                    "Kizárólag videós találatok javítása"
+                ],
+                correct: 1
+            },
+            {
+                question: "Melyik eszköz segít a feltérképezési hibák és indexelési állapot ellenőrzésében?",
+                answer: "Google Search Console.",
+                options: [
+                    "Google Analytics 4",
+                    "Google Ads",
+                    "Google Search Console",
+                    "Google Tag Manager"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi az a Schema Markup (strukturált adat)?",
+                answer: "Egy speciális kód a HTML-ben, ami extra kontextust ad a keresőmotoroknak (pl. 'ez egy recept').",
+                options: [
+                    "A weboldal design eleme",
+                    "Egy kód, ami extra kontextust ad a keresőknek",
+                    "A meta leírás helyettesítője",
+                    "Egy Google Ads beállítás"
+                ],
+                correct: 1
+            },
+            {
+                question: "Melyik állítás igaz az organikus találatokra a fizetettekkel szemben?",
+                answer: "A felhasználók 70%-a inkább ezekre kattint, mert hitelesebbnek tartja őket.",
+                options: [
+                    "Azonnali eredményt hoznak",
+                    "Fizetni kell minden kattintásért",
+                    "A felhasználók 70%-a inkább ezekre kattint",
+                    "Csak rövid távon működnek"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mit jelent a Technikai SEO?",
+                answer: "A weboldal technikai aspektusainak (sebesség, indexelhetőség, mobilbarátság) optimalizálása.",
+                options: [
+                    "Blogbejegyzések írása",
+                    "Linképítés",
+                    "Sebesség és indexelhetőség optimalizálása",
+                    "Kulcsszókutatás"
+                ],
+                correct: 2
+            },
+
+            // --- ÚJ KÉRDÉSEK (PPC PLATFORMOK - OMA6A) ---
+            {
+                question: "Mit jelent a PPC rövidítés?",
+                answer: "Pay-Per-Click (Kattintás alapú fizetés).",
+                options: [
+                    "Pay-Per-Cash",
+                    "Pay-Per-Click",
+                    "Paid-Public-Commercial",
+                    "Product-Placement-Cost"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a Google Ads Search (Keresési) hirdetések fő jellemzője?",
+                answer: "Pull marketing: a felhasználó aktív keresési szándékára (kulcsszavakra) jelenik meg.",
+                options: [
+                    "Push marketing",
+                    "Képes hirdetések",
+                    "Aktív keresési szándékra (Pull) reagál",
+                    "Videókban jelenik meg"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi a Display Hálózat (GDN) elsődleges célja?",
+                answer: "Push marketing: érdeklődés felkeltése, márkaépítés, remarketing vizuális hirdetésekkel.",
+                options: [
+                    "Konkrét keresések kiszolgálása",
+                    "Érdeklődés felkeltése (Push), branding",
+                    "Szöveges hirdetések a keresőben",
+                    "App letöltések"
+                ],
+                correct: 1
+            },
+            {
+                question: "Milyen előnnyel jár a magas Quality Score?",
+                answer: "Alacsonyabb kattintási költség (CPC) és jobb hirdetési pozíció.",
+                options: [
+                    "Nincs hatása az árra",
+                    "Magasabb kattintási költség",
+                    "Alacsonyabb CPC és jobb pozíció",
+                    "Több organikus találat"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mit jelent a CPM ajánlattételi stratégia?",
+                answer: "Cost-Per-Mille: ezer megjelenítésenkénti költség (főleg márkaismertségre).",
+                options: [
+                    "Kattintásonkénti költség",
+                    "Ezer megjelenítés költsége",
+                    "Konverziónkénti költség",
+                    "Megtérülés alapú licit"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mit jelent a ROAS?",
+                answer: "Return On Ad Spend: a hirdetési kiadások megtérülése.",
+                options: [
+                    "Return On Ad Spend",
+                    "Rate Of Ad Sales",
+                    "Revenue On All Sites",
+                    "Real Organic Ad Score"
+                ],
+                correct: 0
+            },
+            {
+                question: "Mi a konverzió a PPC-ben?",
+                answer: "Bármilyen üzletileg értékes cselekvés (vásárlás, feliratkozás, hívás).",
+                options: [
+                    "Csak a vásárlás",
+                    "A hirdetés megtekintése",
+                    "Üzletileg értékes cselekvés",
+                    "Az oldal bezárása"
+                ],
+                correct: 2
+            },
+            {
+                question: "Miért kötelező összekötni a Google Ads-et a GA4-gyel?",
+                answer: "Mert a GA4 mutatja meg, mi történik a kattintás után (visszafordulás, oldalon töltött idő, ROI).",
+                options: [
+                    "Nem kötelező",
+                    "Hogy lássuk a CPC-t",
+                    "Hogy lássuk, mi történik a kattintás után",
+                    "A számlázás miatt"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi a Google Tag Manager (GTM) előnye?",
+                answer: "Egy konténer, amivel fejlesztő nélkül kezelhetjük a mérőkódokat (tageket).",
+                options: [
+                    "Hirdetéseket készít",
+                    "Fejlesztő nélkül kezelhetjük a mérőkódokat",
+                    "Kulcsszavakat generál",
+                    "Helyettesíti a Google Ads-et"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi az a 'Retail Media' a PPC univerzumban?",
+                answer: "Kereskedelmi média platformok hirdetései, pl. Amazon Ads vagy eMAG Ads.",
+                options: [
+                    "TV reklám",
+                    "Rádió reklám",
+                    "Amazon Ads, eMAG Ads",
+                    "Óriásplakát"
+                ],
+                correct: 2
+            },
+            {
+                question: "A tananyag hasonlata szerint mihez hasonlítható a PPC?",
+                answer: "Mintha bérelnénk egy standot a legmenőbb piacon (gyors vevők, de fizetni kell a helyért).",
+                options: [
+                    "Saját étterem felépítése (SEO)",
+                    "Stand bérlése a piacon",
+                    "Szórólapozás az utcán",
+                    "TV reklám vásárlása"
+                ],
+                correct: 1
+            },
+            {
+                question: "Melyik hálózat alkalmas leginkább 'push' marketingre?",
+                answer: "Display hálózat (GDN).",
+                options: [
+                    "Keresési hálózat",
+                    "Display hálózat",
+                    "Shopping",
+                    "Egyik sem"
+                ],
+                correct: 1
+            },
+
+            // --- ÚJ KÉRDÉSEK (PPC KAMPÁNYOK - OMA6B) ---
+            {
+                question: "Milyen beállítások tartoznak a Kampány (Campaign) szintre?",
+                answer: "Büdzsé, Célzás (Hely, Nyelv), Hirdetési hálózat.",
+                options: [
+                    "Kulcsszavak, Hirdetések",
+                    "Büdzsé, Helyszín, Nyelv",
+                    "Számlázási adatok",
+                    "Hirdetésbővítmények"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a Hirdetéscsoport (Ad Group) fő feladata?",
+                answer: "A szorosan összetartozó (tematikus) kulcsszavak és hirdetések csoportosítása.",
+                options: [
+                    "A büdzsé kezelése",
+                    "A földrajzi célzás",
+                    "Tematikus kulcsszavak és hirdetések csoportosítása",
+                    "A konverziókövetés"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mit jelent az 'Általános egyezés' (Broad Match)?",
+                answer: "A hirdetés rokon értelmű szavakra és lazán kapcsolódó keresésekre is megjelenhet.",
+                options: [
+                    "Csak pontos egyezésre jelenik meg",
+                    "Rokon értelmű/kapcsolódó keresésekre is megjelenik",
+                    "A kifejezésnek benne kell lennie a keresésben",
+                    "Kizárja a keresést"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a 'Kifejezésegyezés' (Phrase Match) jele és működése?",
+                answer: "Jele: \"idézőjel\". A keresésnek tartalmaznia kell a kifejezést vagy annak jelentését.",
+                options: [
+                    "Jele: [zárójel], pontos egyezés",
+                    "Jele: \"idézőjel\", tartalmaznia kell a kifejezést",
+                    "Jele: nincs, bármire megjelenik",
+                    "Jele: -kötőjel, kizárás"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mire valók a Kizáró (Negative) kulcsszavak?",
+                answer: "Megakadályozzák, hogy irreleváns keresésekre jelenjen meg a hirdetés (pénzpazarlás elkerülése).",
+                options: [
+                    "Növelik a megjelenést",
+                    "Megakadályozzák a megjelenést irreleváns szavakra",
+                    "Javítják a landing oldalt",
+                    "Automatikus licitálásra valók"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi az RSA (Responsive Search Ad) működési elve?",
+                answer: "Megadunk több címsort és leírást, a Google AI pedig kombinálja őket a legjobb teljesítmény érdekében.",
+                options: [
+                    "Egy fix szöveg jelenik meg mindig",
+                    "A Google AI kombinálja a megadott címsorokat és leírásokat",
+                    "Képes hirdetés generálása",
+                    "Csak mobilon működik"
+                ],
+                correct: 1
+            },
+            {
+                question: "Hány címsort (Headline) és leírást (Description) adhatunk meg egy RSA-ban?",
+                answer: "Akár 15 címsort és 4 leírást.",
+                options: [
+                    "3 címsor, 2 leírás",
+                    "10 címsor, 5 leírás",
+                    "15 címsor, 4 leírás",
+                    "Korlátlan"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi az a USP a hirdetésszövegben?",
+                answer: "Unique Selling Proposition: egyedi terméktulajdonság, amiért minket válasszanak.",
+                options: [
+                    "Universal Search Platform",
+                    "Unique Selling Proposition (Egyedi termékelőny)",
+                    "User Search Pattern",
+                    "Under Sales Price"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi az a CTA?",
+                answer: "Call To Action: cselekvésre ösztönzés (pl. 'Vásárolj most!').",
+                options: [
+                    "Click To Ad",
+                    "Call To Action (Cselekvésre ösztönzés)",
+                    "Cost To Acquire",
+                    "Customer Total Amount"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mire jók a hirdetésbővítmények (Ad Extensions)?",
+                answer: "Növelik a hirdetés méretét és CTR-jét, használatuk ingyenes (pl. belső linkek, hívás).",
+                options: [
+                    "Pénzbe kerülnek",
+                    "Csökkentik a hirdetés méretét",
+                    "Növelik a CTR-t és a minőségi mutatót",
+                    "Csak Display hirdetésnél vannak"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi a 'Sitelink' (Belső link) bővítmény?",
+                answer: "Linkek az oldalunk aloldalaira (pl. Rólunk, Kapcsolat, Akciók).",
+                options: [
+                    "Telefonszám megjelenítése",
+                    "Linkek aloldalakra",
+                    "Kiemelt szöveg",
+                    "Termékkategóriák felsorolása"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a 'Callout' (Kiemelő) bővítmény?",
+                answer: "Rövid, figyelemfelkeltő szövegrészek (pl. 'Ingyenes szállítás').",
+                options: [
+                    "Kattintható link",
+                    "Rövid, figyelemfelkeltő szöveg (nem kattintható)",
+                    "Telefonszám",
+                    "Árlista"
+                ],
+                correct: 1
+            },
+            {
+                question: "Melyik a 'Szent Háromság' (összhang) a PPC kampányokban?",
+                answer: "Kulcsszó - Hirdetésszöveg - Landing oldal.",
+                options: [
+                    "Büdzsé - Licit - Hirdetés",
+                    "Kulcsszó - Hirdetés - Landing oldal",
+                    "Google - Facebook - Instagram",
+                    "CTR - CPC - CPA"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi történik, ha a landing oldal nem releváns a hirdetéshez?",
+                answer: "A konverzió elvész, a felhasználó csalódik, a Quality Score romlik.",
+                options: [
+                    "Semmi, a kattintás megtörtént",
+                    "A Google letiltja a fiókot",
+                    "A konverzió elvész és romlik a Quality Score",
+                    "Nő a CTR"
+                ],
+                correct: 2
+            },
+            {
+                question: "Melyik egyezési típust ajánlott óvatosan, inkább Smart Biddinggel használni?",
+                answer: "Általános egyezés (Broad Match).",
+                options: [
+                    "Pontos egyezés (Exact)",
+                    "Kifejezésegyezés (Phrase)",
+                    "Általános egyezés (Broad)",
+                    "Kizáró egyezés"
+                ],
+                correct: 2
+            },
+            {
+                question: "Hogyan érdemes strukturálni egy hirdetéscsoportot?",
+                answer: "Csak egymással szorosan összefüggő (tematikus) kulcsszavak kerüljenek egy csoportba.",
+                options: [
+                    "Minden kulcsszó egy csoportba",
+                    "Szorosan összefüggő kulcsszavak egy csoportban",
+                    "Véletlenszerű elosztás",
+                    "Csak egy kulcsszó csoportonként"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a Minőségi Mutató (Quality Score) 3 fő összetevője a Google Ads-ben?",
+                answer: "Várható átkattintási arány (Expected CTR), Hirdetés relevanciája, Landing oldal élménye.",
+                options: [
+                    "CPC ajánlat, Napi keret, Kulcsszó hossza",
+                    "Várható CTR, Hirdetés relevanciája, Landing oldal élménye",
+                    "Konverziós arány, Megtekintések száma, Weboldal sebesség",
+                    "Büdzsé mérete, Fiók életkora, Hirdetésbővítmények száma"
+                ],
+                correct: 1
+            },
+            {
+                question: "Melyik a helyes hierarchia sorrend a Google Ads fiókban?",
+                answer: "Fiók (Account) > Kampány (Campaign) > Hirdetéscsoport (Ad Group) > Hirdetés/Kulcsszó.",
+                options: [
+                    "Kampány > Fiók > Hirdetés > Kulcsszó",
+                    "Fiók > Hirdetéscsoport > Kampány > Hirdetés",
+                    "Fiók > Kampány > Hirdetéscsoport > Hirdetés",
+                    "Hirdetéscsoport > Kampány > Fiók > Kulcsszó"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mit jelent az 'Exact Match' (Pontos egyezés) kulcsszó típus és mi a jele?",
+                answer: "Jele: [szögletes zárójel]. Csak a pontosan megadott kifejezésre vagy annak nagyon közeli variánsaira jelenik meg a hirdetés.",
+                options: [
+                    "Jele: 'idézőjel'. A kifejezésnek benne kell lennie a keresésben.",
+                    "Jele: nincs. Bármilyen releváns keresésre megjelenhet.",
+                    "Jele: [szögletes zárójel]. Csak a pontos kifejezésre jelenik meg.",
+                    "Jele: -kötőjel. Kizárja a keresést."
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi a SEO (Keresőoptimalizálás) elsődleges célja?",
+                answer: "A weboldal organikus (nem fizetett) forgalmának növelése a keresőmotorok találati listájáról.",
+                options: [
+                    "Azonnali látogatók vásárlása hirdetésekkel",
+                    "A weboldal organikus forgalmának növelése",
+                    "Közösségi média követők számának növelése",
+                    "A Google Ads Quality Score javítása"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi az a Performance Max (PMax) kampány?",
+                answer: "AI-vezérelt kampánytípus, amely egyetlen kampányból éri el az összes Google hálózatot (YouTube, Display, Search, stb.).",
+                options: [
+                    "Csak a Google Keresőben megjelenő hirdetés",
+                    "AI-vezérelt kampány, ami az összes Google felületen hirdet",
+                    "Kézzel beállított banner kampány blogokon",
+                    "Videós hirdetés kizárólag YouTube-ra"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a különbség az 'In-stream' és 'In-feed' YouTube hirdetések között?",
+                answer: "In-stream: videók előtt/közben (átugorható/nem átugorható). In-feed: a videófolyamban vagy keresési találatokban jelenik meg.",
+                options: [
+                    "Nincs különbség, szinonimák.",
+                    "In-stream: videók alatt futó csík. In-feed: videó előtti reklám.",
+                    "In-stream: videók előtt/közben. In-feed: a videó listában/feedben jelenik meg.",
+                    "In-stream: csak mobilon. In-feed: csak asztali gépen."
+                ],
+                correct: 2
+            },
+            {
+                question: "Mit takar az Off-Page SEO fogalma?",
+                answer: "A weboldalon kívüli tényezők optimalizálása (főleg backlink szerzés/linképítés) a hitelesség növelése érdekében.",
+                options: [
+                    "A weboldal sebességének javítása",
+                    "Kulcsszavak elhelyezése a szövegben",
+                    "Külső linkek (backlinkek) szerzése és márkaépítés",
+                    "A meta leírások megírása"
+                ],
+                correct: 2
+            },
+            {
+                question: "Melyik mutató határozza meg a hirdetés helyezését (Ad Rank) az aukció során?",
+                answer: "Ad Rank = Max. CPC ajánlat × Minőségi mutató (Quality Score).",
+                options: [
+                    "Csak a Max. CPC ajánlat (aki többet fizet, nyer)",
+                    "Max. CPC ajánlat × Minőségi mutató",
+                    "A cég éves bevétele",
+                    "A hirdetés szövegének hossza"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a Google Merchant Center szerepe?",
+                answer: "Ide kell feltölteni a webáruház termék-feedjét (adatfájl), ez az alapja a Shopping és PMax kampányoknak.",
+                options: [
+                    "A kulcsszókutatás fő eszköze",
+                    "Itt kezeljük a YouTube csatorna beállításait",
+                    "Ide töltjük fel a termékadatokat a Shopping hirdetésekhez",
+                    "Ez a Google Analytics régi neve"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi az a GEO (Generative Engine Optimization)?",
+                answer: "Optimalizálás a generatív AI keresőkre (pl. SGE, ChatGPT), ahol a cél, hogy az AI a mi tartalmunkból építse fel a választ.",
+                options: [
+                    "Földrajzi alapú keresőoptimalizálás",
+                    "Optimalizálás generatív AI válaszokra (pl. SGE)",
+                    "Google Earth Optimization",
+                    "Grafikus Elem Optimalizálás"
+                ],
+                correct: 1
+            },
+
+            // --- ÚJ KÉRDÉSEK (KIDOLGOZOTT PDF ALAPJÁN) ---
+            {
+                question: "Hol jelenhetnek meg a Google Display hirdetései (bannerek)?",
+                answer: "A Google Images között és a Google Display rendszerében (weboldalak, appok, Gmail, YouTube).",
+                options: [
+                    "A Google Marketing Platform oldalán",
+                    "Csak a keresési találatok (SERP) között",
+                    "A Google Images között és a Google Display rendszerében",
+                    "Kizárólag a Google kereső főoldalán"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi egy Google Ads kampány tipikus struktúrája?",
+                answer: "Kampány - hirdetéscsoportok - hirdetések.",
+                options: [
+                    "Hirdetéscsoportok - hirdetések - kulcsszavak",
+                    "Kampány - hirdetéscsoportok - hirdetések",
+                    "Kampány - hirdetések - hirdetéscsoportok",
+                    "Kampány - hirdetések - kulcsszavak"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi az, hogy Landing Page?",
+                answer: "Egy olyan weblap, ami arra van optimalizálva, hogy konvertáljon.",
+                options: [
+                    "Egy termékbemutató oldal egy website-on belül",
+                    "Egy olyan weblap, ami arra van optimalizálva, hogy konvertáljon",
+                    "Egy olyan weblap, amire a website címoldaláról jutunk",
+                    "Egy bármilyen oldal, amit küldenek nekünk a Messengeren"
+                ],
+                correct: 1
+            },
+            {
+                question: "Miből áll az AdRank?",
+                answer: "Max. CPC (Bid) * Minőségi mutató (QS).",
+                options: [
+                    "CTR * Bid",
+                    "Max. CPC * QS",
+                    "Minőségi mutató * QS",
+                    "Bid * QS"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a CTA jelentése?",
+                answer: "Call-to-Action (Cselekvésre ösztönzés).",
+                options: [
+                    "Call-to-Account",
+                    "Cost-per-Account",
+                    "Cost-to-Action",
+                    "Call-to-Action"
+                ],
+                correct: 3
+            },
+            {
+                question: "Ha egy weboldalnak nagyon rossz a minőségi mutatója, akkor...",
+                answer: "Előnytelenebb helyen fog megjelenni a hirdetése, hiába költ ugyanannyit, mint a konkurense.",
+                options: [
+                    "Előnytelenebb helyen fog megjelenni a hirdetése",
+                    "Ugyanannyit kell licitáljon, mint a konkurens",
+                    "Jó hirdetésekkel kompenzálhatja ezt",
+                    "Kevesebbet kell költsön hirdetésekre"
+                ],
+                correct: 0
+            },
+            {
+                question: "Leíró statisztikai módszerekkel automatikusan összegzi számunkra a webanalitikai adatokat a(z)...",
+                answer: "Google Analytics.",
+                options: [
+                    "Google Analytics",
+                    "GoLang",
+                    "NumPy",
+                    "SPSS"
+                ],
+                correct: 0
+            },
+            {
+                question: "Mit jelent a CTR?",
+                answer: "Átkattintási Ráta (Click-Through Rate).",
+                options: [
+                    "Egy kattintásra fizetett összeg",
+                    "Visszafordulási Ráta",
+                    "Átkattintási Ráta",
+                    "Egy ügyfél megszerzésének költsége"
+                ],
+                correct: 2
+            },
+            {
+                question: "Egy jó landing page-en feltétlenül kell legyen:",
+                answer: "CTA vagyis Call-to-Action.",
+                options: [
+                    "Számos link, ami által a felhasználó tovább kattinthat",
+                    "Kielégítő mennyiségű szöveg",
+                    "CTR, vagyis a cselekedetre ösztönző felszólítás",
+                    "CTA vagyis Call-to-Action"
+                ],
+                correct: 3
+            },
+            {
+                question: "Mi az, hogy konverzió?",
+                answer: "Egy előre kitűzött cél megvalósulása, ami jellemzően egy érdeklődő vásárlóvá / feliratkozóvá alakítását jelenti.",
+                options: [
+                    "A felhasználó preferenciáinak megváltozása",
+                    "Amikor a látogatóból érdeklődő lesz",
+                    "Egy olyan cél megvalósulása, amit a cég stratégiai szinten kitűzött",
+                    "Egy előre kitűzött cél megvalósulása (vásárlás/feliratkozás)"
+                ],
+                correct: 3
+            },
+            {
+                question: "A SERP-en fellelhető tartalmak közül melyikért nem fizetünk a Google-nek?",
+                answer: "Organikus találat.",
+                options: [
+                    "Product Listing Ad",
+                    "Dispaly tartalom",
+                    "Product Text Ad",
+                    "Organikus találat"
+                ],
+                correct: 3
+            },
+            {
+                question: "Mire használható leginkább a performance advertising (PPC)?",
+                answer: "Lead-ek létrehozására.",
+                options: [
+                    "Tartalommarketingre",
+                    "Márkafelismerés javítására",
+                    "Lead-ek létrehozására",
+                    "Hangulatok közvetítésére"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mit jelent a remarketing?",
+                answer: "A látogatót egy másik felületen újra célba vesszük a reklámunkkal, miután nálunk járt.",
+                options: [
+                    "A látogatót újra célba vesszük, miután nálunk járt",
+                    "Csak a Google-nél létezik remarketing",
+                    "Egy új marketing módszer kipróbálása ugyanazon a perszónán",
+                    "A látogató már vásárolt és új üzenetet kap"
+                ],
+                correct: 0
+            },
+            {
+                question: "Az A/B tesztelés jelentése",
+                answer: "Két design vagy hirdetésszöveg szimultán tesztelése, hogy melyik felel meg jobban a célnak.",
+                options: [
+                    "Kizárólag design elemek tesztelésére használt eljárás",
+                    "Két verzió tesztelése statisztikai próba nélkül",
+                    "Több, mint két variáns tesztelésére használt eljárás",
+                    "Két variáns szimultán tesztelése a jobb eredményért"
+                ],
+                correct: 3
+            },
+            {
+                question: "Jellegzetes SEO tevékenység",
+                answer: "A weboldalunk szövegének átírása annak függvényében, hogy milyen kulcsszavakra szeretnénk megjelenni a Google SERP-en.",
+                options: [
+                    "Szöveg átírása kulcsszavak alapján a SERP megjelenésért",
+                    "A hirdetés helyére való licitálás Google Ads-ben",
+                    "Google hirdetések szövegének optimalizálása",
+                    "Telefonszám megjelenítése a hirdetésbővítményben"
+                ],
+                correct: 0
+            },
+            {
+                question: "Mely Google hirdetéstípusok megfelelőbbek konverzióra?",
+                answer: "Search Ads (Keresési hirdetések).",
+                options: [
+                    "Banner Ads",
+                    "Display Ads",
+                    "Print Ads",
+                    "Search Ads"
+                ],
+                correct: 3
+            },
+            {
+                question: "Az off-page SEO keretében tárgyaljuk a következő tevékenységet:",
+                answer: "Linképítés.",
+                options: [
+                    "Kulcsszavak alapján írunk szövegtartalmat",
+                    "Linképítés",
+                    "Canonical beállítások",
+                    "Mobilra optimalizált weboldal"
+                ],
+                correct: 1
+            },
+            {
+                question: "Konkrét adatgyűjtési technológia a:",
+                answer: "Címke (Tag).",
+                options: [
+                    "Remarketing folyamat",
+                    "Chrome böngésző",
+                    "Kulcsszóelemzés",
+                    "Címke"
+                ],
+                correct: 3
+            },
+            {
+                question: "A sütik működésére jellemző, hogy",
+                answer: "A Google Tag Manager-ből lehet őket a honlapunk forráskódjába telepíteni.",
+                options: [
+                    "A Google Tag Manager-ből telepíthetők",
+                    "Korlátozott ideig érvényesek",
+                    "Képesek regisztrálni a megnyitott füleket",
+                    "Javascript programnyelven íródtak"
+                ],
+                correct: 0
+            },
+            {
+                question: "Hol jelenik meg a Youtube Discovery Ad (In-feed)?",
+                answer: "A videólistában.",
+                options: [
+                    "A videólistában",
+                    "A videóra ráhelyezve egy layer-ben",
+                    "A videó közben",
+                    "A videó elején"
+                ],
+                correct: 0
+            },
+            {
+                question: "Hol jelenhetnek meg a Google Ads szöveges hirdetések?",
+                answer: "A SERP-en (Keresési találati oldalon).",
+                options: [
+                    "A SERP-en",
+                    "A Display rendszerben",
+                    "A SERP-en és a Display rendszerben",
+                    "A Google Marketing Platform oldalain"
+                ],
+                correct: 0
+            },
+            {
+                question: "A Quality Score (minőségi mutató) NEM függ a következőktől:",
+                answer: "A felajánlott összegtől (Bid).",
+                options: [
+                    "A felajánlott összegtől",
+                    "A hirdetésszövegünk relevanciájától",
+                    "A landing page-ünktől",
+                    "A kiválasztott kulcsszavaktól"
+                ],
+                correct: 0
+            },
+            {
+                question: "Mit jelent a Bounce Rate?",
+                answer: "Azon látogatók aránya az összes látogatóból, akik szinte azonnal elhagyják az oldalt, amint megérkeztek (visszafordulási arány).",
+                options: [
+                    "Akik 15 másodpercnél többet tartózkodnak az oldalon",
+                    "Akik visszapattannak még betöltés előtt",
+                    "Az a szám, ami ha 50% fölötti, akkor jó az oldal",
+                    "Akik szinte azonnal elhagyják az oldalt (egyetlen megtekintés)"
+                ],
+                correct: 3
+            },
+            {
+                question: "Melyik a Google Ads szöveges hirdetéseinek jellemző árazási formája?",
+                answer: "CPC (Cost-per-Click).",
+                options: [
+                    "CPC (Cost-per-Click)",
+                    "CPM (Cost-per-Mile)",
+                    "CPC (Cost-per-Client)",
+                    "CPR (Cost-per-Reaction)"
+                ],
+                correct: 0
+            },
+            {
+                question: "A hirdetések kezelését, menedzselését magába foglaló tevékenység neve a Google Ads rendszerben:",
+                answer: "Search Engine Marketing (SEM) / PPC.",
+                options: [
+                    "Text Advertising",
+                    "SEO",
+                    "Remarketing",
+                    "Search Engine Marketing"
+                ],
+                correct: 3
+            },
+            {
+                question: "Elsősorban milyen célzási technológiát használt a Google (Search) a hirdetései megjelenítésére?",
+                answer: "Kontextuális / Kulcsszó alapú célzást.",
+                options: [
+                    "Audience-alapú célzást",
+                    "Viselkedés-alapú célzást",
+                    "Demográfiai célzást",
+                    "Kontextuális célzást"
+                ],
+                correct: 3
+            }
+        ];
+
+        // --- ÁLLAPOT VÁLTOZÓK ---
+        let currentIndex = 0;
+        let score = 0;
+        let isFlipped = false;
+
+        // --- NAVIGÁCIÓS FÜGGVÉNYEK ---
+        function goBack() {
+            document.getElementById('active-view').style.display = 'none';
+            document.getElementById('menu-view').style.display = 'block';
+            document.getElementById('menu-view').style.animation = 'fadeIn 0.5s ease';
+        }
+
+        function showSection(sectionId) {
+            document.getElementById('menu-view').style.display = 'none';
+            document.getElementById('active-view').style.display = 'block';
+            document.getElementById('flashcard-section').classList.add('hidden');
+            document.getElementById('quiz-section').classList.add('hidden');
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        // --- TANULÓKÁRTYA LOGIKA ---
+        function startFlashcards() {
+            currentIndex = 0;
+            isFlipped = false;
+            showSection('flashcard-section');
+            renderCard();
+        }
+
+        function renderCard() {
+            const cardElement = document.getElementById('card-element');
+            // Reset flip state visually without animation first
+            cardElement.style.transition = 'none';
+            cardElement.classList.remove('flipped');
+            isFlipped = false;
+            
+            // Force reflow
+            void cardElement.offsetWidth;
+            cardElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1)';
+
+            const data = database[currentIndex];
+            document.getElementById('fc-question').innerText = data.question;
+            document.getElementById('fc-answer').innerText = data.answer;
+            document.getElementById('fc-progress').innerText = `${currentIndex + 1} / ${database.length}`;
+        }
+
+        function flipCard() {
+            const card = document.getElementById('card-element');
+            isFlipped = !isFlipped;
+            if(isFlipped) card.classList.add('flipped');
+            else card.classList.remove('flipped');
+        }
+
+        function nextCard() {
+            if (currentIndex < database.length - 1) {
+                currentIndex++;
+                renderCard();
+            }
+        }
+
+        function prevCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderCard();
+            }
+        }
+
+        // --- KVÍZ LOGIKA ---
+        function startQuiz() {
+            currentIndex = 0;
+            score = 0;
+            showSection('quiz-section');
+            document.getElementById('quiz-content').classList.remove('hidden');
+            document.getElementById('quiz-end').classList.add('hidden');
+            updateScoreDisplay();
+            renderQuizQuestion();
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('quiz-score').innerText = `Pontszám: ${score}`;
+            document.getElementById('quiz-progress').innerText = `Kérdés ${currentIndex + 1} / ${database.length}`;
+        }
+
+        function renderQuizQuestion() {
+            const data = database[currentIndex];
+            document.getElementById('q-text').innerText = data.question;
+            const optionsContainer = document.getElementById('q-options');
+            optionsContainer.innerHTML = '';
+
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+            updateScoreDisplay();
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            // Disable all buttons
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.disabled = true);
+
+            const correctIndex = database[currentIndex].correct;
+
+            if (selectedIndex === correctIndex) {
+                btnElement.classList.add('correct');
+                score++;
+            } else {
+                btnElement.classList.add('wrong');
+                // Highlight the correct one
+                buttons[correctIndex].classList.add('correct');
+            }
+
+            // Wait and go next
+            setTimeout(() => {
+                if (currentIndex < database.length - 1) {
+                    currentIndex++;
+                    renderQuizQuestion();
+                } else {
+                    showQuizEnd();
+                }
+            }, 1500);
+        }
+
+        function showQuizEnd() {
+            document.getElementById('quiz-content').classList.add('hidden');
+            document.getElementById('quiz-end').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score} / ${database.length} pont`;
+            document.getElementById('quiz-score').innerText = `Végeredmény: ${score}`;
+        }
+
+    </script>
+</body>
+</html>
